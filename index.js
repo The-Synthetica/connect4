@@ -53,7 +53,9 @@ function Turn(pos){
     if(turnos==42){
         //empate
         reset();
-        console.log("EMPATE")
+        console.log("EMPATE");
+        
+        banner("draw");
     }
 
     while(pos>6)
@@ -67,6 +69,7 @@ function Turn(pos){
 
                     if(Corroborate()){
                         console.log("Ganaron las P1");
+                        banner("player1");
                         return false;
                     }
                 
@@ -78,6 +81,7 @@ function Turn(pos){
                 
                 if(Corroborate()){
                     console.log("Ganaron las P2");
+                    banner("player2");
                     return false;
                 }
 
@@ -204,3 +208,105 @@ function reset(){
 
     turnos=0;
 }
+
+
+
+// 
+
+const background= document.getElementsByClassName('element');
+
+setInterval(() => {
+    create();
+}, 100);
+
+function create(){
+    const newDiv= document.createElement('div');
+    const newDiv2= document.createElement('div');
+    const newDiv3= document.createElement('div');
+
+    newDiv.classList.add('box')
+    newDiv2.classList.add('box')
+    newDiv3.classList.add('box')
+
+    const randomOffset= randomInterval(0, 100);
+    const randomAnimationDuration= randomInterval(0.5, 1)
+    const randomScale= randomInterval(0.75, 0.1);
+    // const randomColorRed= Math.floor(randomInterval(0, 255));
+    // const randomColorBlue= Math.floor(randomInterval(0, 255));
+    // const randomColorGreen= Math.floor(randomInterval(0, 255));
+
+    newDiv.style.scale= randomScale + '';
+    newDiv2.style.scale= randomScale + '';
+    newDiv3.style.scale= randomScale + '';
+
+    newDiv.style.left=randomOffset + '%';
+    newDiv2.style.left=randomOffset + '%';
+    newDiv3.style.left=randomOffset + '%';
+
+    newDiv.style.animation='fade ' + randomAnimationDuration + 's' + ' forwards linear';
+    newDiv2.style.animation='fade ' + randomAnimationDuration + 's' + ' forwards linear';
+    newDiv3.style.animation='fade ' + randomAnimationDuration + 's' + ' forwards linear' + ' , ' + 'glitch ' +  randomAnimationDuration + 's' + ' infinite';
+
+    // newDiv.style.background='rgba(' + randomColorRed + ' , ' + randomColorGreen + ' , ' + randomColorBlue + ' , 0.25)';
+
+    background[0].appendChild(newDiv);
+    background[1].appendChild(newDiv2);
+    background[2].appendChild(newDiv3);
+
+    setTimeout(() => {
+        background[0].removeChild(newDiv);
+        background[1].removeChild(newDiv2)
+        background[2].removeChild(newDiv3)
+    }, randomAnimationDuration * 1000)
+}
+
+function randomInterval(min, max) {
+    return (Math.random() * (max - min + 1) + min)
+}
+
+
+// 
+const banner1= document.getElementById('banner-player1-wins');
+const banner2= document.getElementById('banner-player2-wins');
+const bannerDraw= document.getElementById('bannerDraw');
+
+function banner( flag ){
+    switch (flag){
+        case "player1":
+            banner1.style.visibility='visible';
+            banner1.style.opacity='1';
+            
+            break;
+        case "player2":
+            banner2.style.visibility='visible';
+            banner2.style.opacity='1';
+            break;
+        case "draw":
+            bannerDraw.style.visibility='visible';
+            bannerDraw.style.opacity='1';
+            break;
+    }
+}
+
+
+banner1.addEventListener('click', () => {
+    banner1.style.opacity= '0';
+    
+    setTimeout(() => {
+    banner1.style.visibility= 'hidden'
+    }, 1000);
+})
+banner2.addEventListener('click', () => {
+    banner2.style.opacity= '0';
+    
+    setTimeout(() => {
+    banner2.style.visibility= 'hidden'
+    }, 1000);
+})
+bannerDraw.addEventListener('click', () => {
+    bannerDraw.style.opacity= '0';
+    
+    setTimeout(() => {
+    bannerDraw.style.visibility= 'hidden'
+    }, 1000);
+})

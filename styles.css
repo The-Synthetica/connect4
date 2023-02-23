@@ -1,3 +1,7 @@
+html{
+    min-width: 250px;
+}
+
 body{
     background: linear-gradient(to right top, rgb(33, 40, 51), rgb(9, 13, 20), rgb(0, 0, 0));
     margin: 0;
@@ -8,7 +12,133 @@ body{
 
     width: 100%;
     height: 100vh;
+
+    position: relative;
+
 }
+
+#banner-player1-wins{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    /* background: linear-gradient(to right top, rgb(33, 40, 51), rgb(9, 13, 20), rgb(0, 0, 0)); */
+    background: linear-gradient(to  top, rgb(97, 10, 25), rgb(30, 10, 10), rgb(10, 0, 0), rgb(0, 0, 0));
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity 0.5s ease-in-out;
+}
+#banner-player1-wins h1{
+    z-index: 1;
+    color: #FA7700;
+    text-shadow: 2px 2px 2px #FCFD1D,
+                 -2px -2px 2px #FCFD1D,
+                 -2px 2px 2px #FCFD1D,
+                 2px -2px 2px #FCFD1D;
+
+    filter: drop-shadow(0 0 15px #FCFD1D);
+}
+
+
+.element{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
+    text-align: center;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+}
+.box{
+    width: 25px;
+    height: 50px;
+    
+    backdrop-filter: blur(10px) brightness(2);
+
+    position: absolute;
+    bottom: -50px;
+
+    mix-blend-mode: screen;
+
+    filter: blur(5px);
+
+    animation: fade 0.5s forwards linear;
+}
+
+
+#banner-player2-wins{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    background: linear-gradient(to  top, rgb(97, 97, 25), rgb(30, 30, 10), rgb(10, 10, 0), rgb(0, 0, 0));
+
+    visibility: hidden;
+
+    transition: opacity 0.5s ease-in-out;
+}
+#banner-player2-wins h1{
+    z-index: 1;
+    color: #FA7700;
+    text-shadow: 2px 2px 2px #FCFD1D,
+                 -2px -2px 2px #FCFD1D,
+                 -2px 2px 2px #FCFD1D,
+                 2px -2px 2px #FCFD1D;
+
+    filter: drop-shadow(0 0 15px #FCFD1D);
+}
+
+
+#bannerDraw{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    background: linear-gradient(to  top, rgb(100, 100, 100), rgb(50, 50, 50), rgb(10, 10, 10), rgb(0, 0, 0));
+
+    visibility: hidden;
+    
+    transition: opacity 0.5s ease-in-out;
+}
+#bannerDraw h1{
+    z-index: 1;
+    color: #000000;
+    text-shadow: 2px 2px 2px #00ffff,
+                 -2px -2px 2px #ff00ff,
+                 -2px 2px 2px #00ffff,
+                 2px -2px 2px #ff00ff;
+
+    filter: drop-shadow(0 0 15px #e355ff);
+}
+
+#banner-player2-wins .element .box{
+    background-color: rgba(255, 255, 50, 0.5);
+}
+#banner-player1-wins .element .box{
+    background-color: rgba(255, 50, 50, 0.5);
+}
+#bannerDraw .element .box{
+    background-color: rgba(50, 50, 50, 0.5);
+}
+
 
 .container{
     position: relative;
@@ -64,7 +194,7 @@ body{
     height: 100%;
 
     z-index: 1;
-    border: solid 5px  rgb(0, 0, 173);
+    border: solid 1px  rgb(0, 0, 173);
     background: radial-gradient(circle at center, transparent 55%, rgb(0, 0, 173) 57%);
 }
 
@@ -120,6 +250,9 @@ body{
     animation: blink 1s infinite forwards alternate-reverse;
 }
 
+
+/* Animaciones */
+
 @keyframes caida{
     25%{
         top: -500px;
@@ -145,6 +278,47 @@ body{
 
     100%{
         filter: brightness(1.3);
+    }
+}
+
+@keyframes fade {
+    0%{
+        opacity: 1;
+        box-shadow: inset 0 0 10px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    50%{
+        opacity: 1;
+    }
+
+    100%{
+        bottom: 50%;
+        opacity: 0;
+        box-shadow: inset 0 0 10px 10px rgba(255, 255, 255, 0.5);
+    }
+    
+}
+
+@keyframes glitch {
+
+    0%, 100%{
+        filter: drop-shadow(2px 2px 1px rgb(255, 0, 255))
+                drop-shadow(-2px -2px 1px rgb(0, 255, 255));
+    }
+
+    25%{
+        filter: drop-shadow(-2px 2px 1px rgb(255, 0, 255))
+                drop-shadow(2px -2px 1px rgb(0, 255, 255));
+    }
+
+    50%{
+        filter: drop-shadow(2px -2px 1px rgb(255, 0, 255))
+                drop-shadow(-2px 2px 1px rgb(0, 255, 255));
+    }
+
+    75%{
+        filter: drop-shadow(-2px -2px 1px rgb(255, 0, 255))
+                drop-shadow(2px 2px 1px rgb(0, 255, 255));
     }
 }
 
