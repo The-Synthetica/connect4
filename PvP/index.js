@@ -8,6 +8,9 @@ let gameOver= false;
 
 let prepos=0;
 
+const redTokens= document.getElementsByClassName('player1');
+const blueTokens= document.getElementsByClassName('player2');
+
 let turnos=0;
 
 let matrix= [["-", "-", "-", "-", "-", "-", "-",],
@@ -57,12 +60,14 @@ function Turn(pos){
 
     if(!gameOver){
         turnos++;
-        if(turnos==42){
+        console.log(redTokens.length + blueTokens.length);
+        if( redTokens.length + blueTokens.length > 40){
             //empate
             // reset();
             console.log("EMPATE");
-            
             ViewWinner('empate');
+
+            return false;
         }
 
         while(pos>6)
@@ -209,6 +214,11 @@ function Corroborate(){
 function ViewWinner(motive, column, row, line, check){
     gameOver= true;
     let ext1=0, ext2=0;
+
+    if(motive == 'empate'){
+        banner('draw');
+        return 0;
+    }
 
     if(motive == 'vertical'){
         
