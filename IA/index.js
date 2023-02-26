@@ -20,6 +20,13 @@ let matrix= [["-", "-", "-", "-", "-", "-", "-",],
              ["-", "-", "-", "-", "-", "-", "-",],
              ["-", "-", "-", "-", "-", "-", "-",]]
 
+let clonedMatrix=   [["-", "-", "-", "-", "-", "-", "-",],
+                    ["-", "-", "-", "-", "-", "-", "-",],
+                    ["-", "-", "-", "-", "-", "-", "-",],
+                    ["-", "-", "-", "-", "-", "-", "-",],
+                    ["-", "-", "-", "-", "-", "-", "-",],
+                    ["-", "-", "-", "-", "-", "-", "-",]]
+
 
 let points=[0, 0, 0, 0, 0, 0, 0];
 let rivalPoints=[0, 0, 0, 0, 0, 0, 0];
@@ -137,8 +144,6 @@ function IAHoverAnimation(time){
         console.log(slots);
             
         slots = slots.sort((a, b) => 0.5 - Math.random());
-        
-        console.log(slots);
 
         for(let i=0; i<slots.length; i++){
                         slot[slots[i]].classList.remove('player1-pre');
@@ -2166,8 +2171,138 @@ function BestColumn(row, column){
     console.log(rivalPoints, points)
 
     let bestRival = Math.max(...rivalPoints);
-    let bestIA = Math.max(...points);
+    let bestIA = Math.max(...points);    
 
+    // Clonamos la matrix
+    for(let i=0; i<clonedMatrix.length; i++){
+        for(let j=0; j<clonedMatrix[i].length; j++){
+            clonedMatrix[i][j]=matrix[i][j];
+        }
+    }
+
+
+    // Evaluamos si el mejor tiro enemigo nos pone en peligro
+            for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
+                if(i==3 && k==3){
+                    if(bestRival==rivalPoints[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                clonedMatrix[j][i]='x';
+                                break
+                            }
+                        }
+                        if(RiskOfLose(true).state){
+                            rivalPoints[i]=-1;
+                            bestRival = Math.max(...rivalPoints)
+                            break;
+                        }
+
+                        break;
+                    }
+                }
+
+                else{
+                    if(bestRival==rivalPoints[k]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                clonedMatrix[j][i]='x';
+                                break
+                            }
+                        }
+                        if(RiskOfLose(true).state){
+                            rivalPoints[i]=-1;
+                            bestRival = Math.max(...rivalPoints)
+                            break;
+                        }
+                        
+                        break;
+                    }
+
+                    
+                    if(bestRival==rivalPoints[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                clonedMatrix[j][i]='x';
+                                break
+                            }
+                        }
+                        if(RiskOfLose(true).state){
+                            rivalPoints[i]=-1;
+                            bestRival = Math.max(...rivalPoints)
+                            break;
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+
+
+    // Clonamos la matrix
+    for(let i=0; i<clonedMatrix.length; i++){
+        for(let j=0; j<clonedMatrix[i].length; j++){
+            clonedMatrix[i][j]=matrix[i][j];
+        }
+    }
+    
+    // Evaluamos si el mejor tiro amigo nos pone en peligro
+            for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
+                if(i==3 && k==3){
+                    if(bestIA==points[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                            clonedMatrix[j][i]='o';
+                            break;
+                            }
+                        }
+                        if(RiskOfLose(false).state){
+                            points[i]=-1;
+                            bestIA = Math.max(...points)
+                            break;
+                        }
+                        
+                    break;
+                    }
+                }
+
+                else{
+                    if(bestIA==points[k]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][k]=='-'){
+                            clonedMatrix[j][k]='o';
+                            break;
+                            }
+                        }
+                        console.log('aaaaaaaaaaa',RiskOfLose(false).state)
+                        if(RiskOfLose(false).state){
+                            points[k]=-1;
+                            bestIA = Math.max(...points)
+                            break;
+                        }
+                        
+                    break;
+                    }
+
+                    
+                    if(bestIA==points[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                            clonedMatrix[j][i]='o';
+                            break;
+                            }
+                        }
+                        if(RiskOfLose(false).state){
+                            points[i]=-1;
+                            bestIA = Math.max(...points)
+                            break;
+                        }
+                        
+                    break;
+                    }
+                }
+            }
+
+    console.log(rivalPoints, points)
     console.log(bestIA, bestRival)
     
     if(bestRival>bestIA){
@@ -2396,8 +2531,8 @@ function evalRivalColumn(line, column, comp){
                         }
                     }
 
-                if(rivalPoints[column] > 3)
-                    rivalPoints[column]=0;
+                // if(rivalPoints[column] > 3)
+                //     rivalPoints[column]=0;
 
                 return 0;
         }
@@ -2582,6 +2717,9 @@ function evalIAColumn(line, column, comp){
                             break;
                         }
                     }
+                
+                // if(rivalPoints[column] > 3)
+                //     rivalPoints[column]=0;
 
                 return 0;
         }
@@ -2590,3 +2728,510 @@ function evalIAColumn(line, column, comp){
     console.log('-', column)
 }
 
+function RiskOfLose(flag){
+    let check1="";
+    let check2="";
+
+    let check3="";
+    let check4="";
+
+    let ext1=0, ext2=0;
+    let slot1=0, slot2=0;
+
+    let checkAm='';
+
+    if(flag){
+        check1="-ooo";
+        check2="ooo-";
+
+        check3="o-oo";
+        check4="oo-o";
+        
+        checkAm='ooo';
+    }
+
+    else{
+        check1="-xxx";
+        check2="xxx-";
+
+        check3="x-xx";
+        check4="xx-x";
+
+        checkAm='xxx';
+    }
+
+    // Corrobora en Horizontal
+    for(let i=0; i<clonedMatrix.length; i++){
+        let line=clonedMatrix[i].toString().replaceAll(',','');
+        
+        if(line.includes(check1) || line.includes(check2)){
+            ext1=0; ext2=0; slot1=0; slot2=0;
+                // Buscamos las columnas donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<4){
+                        let subline= line.slice(i, i+3);
+                        if(subline == checkAm){
+                            ext1=i-1; ext2=i+3;
+                        }
+                    }
+                }
+
+                // Buscamos los extremos para asegurarnos de que la amenaza es real
+
+                for(let i=5; i>=0; i--){
+                    if(clonedMatrix[i][ext1]=='-'){
+                        slot1=i;
+                        break;
+                    }
+                }
+
+                for(let i=5; i>=0; i--){
+                    if(clonedMatrix[i][ext2]=='-'){
+                        slot2=i;
+                        break;
+                    }
+                }
+
+                if(slot1 == i || slot2 == i)
+                return {state: true, motive: 'horizontal', column:undefined, row:i};
+        }
+
+
+        if(line.includes(check3) || line.includes(check4)){
+            ext1=0; slot1=0;
+
+                // Buscamos las columnas donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+                
+                
+                // Buscamos los extremos para asegurarnos de que la amenaza es real
+
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][ext1]=='-'){
+                        if(i==j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else
+                            break;
+                    }
+                }
+                console.log(ext1, slot1, i)
+                if(slot1 == i)
+                    return {state: true, motive: 'horizontal-parcial', column:undefined, row:i};
+        }
+    }
+
+    // Corrobora en Vertical
+    for(let i=0; i<clonedMatrix[0].length; i++){
+        let array=[];
+
+        for(let j=0; j<clonedMatrix.length; j++){
+            array.push(clonedMatrix[j][i]);
+        }
+        
+        let line=array.toString().replaceAll(',','');
+        
+        if(line.includes(check1) || line.includes(check2)){
+            return {state: true, motive: 'vertical', column:i, row:undefined};
+        }
+    }
+
+    // Corrobora diagonal (si la matriz fuese cudrada, esto seria mas facil)
+        // 4 diagonales principales
+        for(let i=0; i<4; i++){
+            let array=[]
+            for(let j=0, k=i; j<6 && k<7; j++, k++){
+                array.push(clonedMatrix[j][k])
+            }
+
+            let line=array.toString().replaceAll(',','');
+            if(line.includes(check1) || line.includes(check2)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+            // Buscamos la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<4){
+                        let subline= line.slice(i, i+3);
+                        if(subline == checkAm){
+                            ext1=i-1; ext2=i+3;
+                        }
+                    }
+                }
+
+
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][ext1+i]=='-'){
+                        if(ext1 + i>-1){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][ext2+i]=='-'){
+                        if(ext2 + i<7){
+                            slot2=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                
+            // Nos aseguramos de que sea evitable
+                if((slot1 == (ext1) && ext1 + i>-1) || (slot2 == ext2 && ext2 + i<7))
+                    return {state: true, motive: 'diagonal-principal', column:undefined, row:i, diagonal:i};
+            }
+
+            if(line.includes(check3) || line.includes(check4)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                    for(let j=5; j>=0; j--){
+                        if(clonedMatrix[j][ext1+i]=='-'){
+                            if(ext1 == j){
+                                slot1=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+    
+                    
+                // Nos aseguramos de que sea evitable
+                    if(slot1 == (ext1))
+                    return {state: true, motive: 'diagonal-principal-parcial', column:undefined, row:i, diagonal:i};
+            }
+
+        }
+        
+        // 4 diagonales principales inversas
+        for(let i=6; i>2; i--){
+            let array=[]
+            for(let j=0, k=i; j<6 && k>=0; j++, k--){
+                array.push(clonedMatrix[j][k])
+            }
+            
+            let line=array.toString().replaceAll(',','');
+            if(line.includes(check1) || line.includes(check2)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+            
+            // Buscamos la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<4){
+                        let subline= line.slice(i, i+3);
+                        if(subline == checkAm){
+                            ext1=i-1; ext2=i+3;
+                        }
+                    }
+                }
+
+
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][i-ext1]=='-'){
+                        if(i - ext1>-1){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][i - ext2]=='-'){
+                        if(i - ext2<7){
+                            slot2=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                
+            // Nos aseguramos de que sea evitable
+                if((slot1 == (ext1) && i - ext1>-1) || (slot2 == ext2 && i - ext2<7))
+                return {state: true, motive: 'diagonal-principal-inversa', column:undefined, row:i, diagonal:i};
+            }
+
+            if(line.includes(check3) || line.includes(check4)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][i - ext1]=='-'){
+                        if(ext1 == j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+    
+                    
+                // Nos aseguramos de que sea evitable
+                if(slot1 == (ext1))
+                return {state: true, motive: 'diagonal-principal-inversa-parcial', column:undefined, row:i, diagonal:i};
+            }
+        }
+
+        // 2 diagonales secundarias
+        for(let i=1; i<3; i++){
+            let array=[]
+            for(let j=i, k=0; j<6 && k<7; j++, k++){
+                array.push(clonedMatrix[j][k])
+            }
+
+            let line=array.toString().replaceAll(',','');
+            if(line.includes(check1) || line.includes(check2)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+                // Buscamos la amenaza
+                    for(let i=0; i < line.length; i++){
+                        if(i<4){
+                            let subline= line.slice(i, i+3);
+                            if(subline == checkAm){
+                                ext1=i-1; ext2=i+3;
+                            }
+                        }
+                    }
+    
+    
+                    for(let j=5; j>=0; j--){
+                        if(clonedMatrix[j][ext1]=='-'){
+                            if(j == (i + ext1) && ext1>-1){
+                                slot1=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+    
+                    for(let j=5; j>=0; j--){
+                        if(clonedMatrix[j][ext2]=='-'){
+                            if(j == (i + ext2) && ext2<7){
+                                slot2=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+
+                // Nos aseguramos de que sea evitable
+                    if((slot1 == (i + ext1) && ext1>-1) || (slot2 == (i + ext2) && ext2<7))
+                return {state: true, motive: 'diagonal-secundaria', column:undefined, row:i, diagonal:i};
+            }
+
+
+            if(line.includes(check3) || line.includes(check4)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][ext1]=='-'){
+                        if((i + ext1) == j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+    
+                    
+                // Nos aseguramos de que sea evitable
+                    if(slot1 == (i + ext1))
+                    return {state: true, motive: 'diagonal-secundaria-parcial', column:undefined, row:i, diagonal:i};
+            }
+        }
+
+        // 2 diagonales secundarias inversas
+        for(let i=1; i<3; i++){
+            let array=[]
+            for(let j=i, k=6; j<6 && k>=0; j++, k--){
+                array.push(clonedMatrix[j][k])
+            }
+            
+            let line=array.toString().replaceAll(',','');
+            if(line.includes(check1) || line.includes(check2)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+                // Buscamos la amenaza
+                    for(let i=0; i < line.length; i++){
+                        if(i<4){
+                            let subline= line.slice(i, i+3);
+                            if(subline == checkAm){
+                                ext1=i-1; ext2=i+3;
+                            }
+                        }
+                    }
+    
+    
+                    for(let j=5; j>=0; j--){
+                        if(clonedMatrix[j][6-ext1]=='-'){
+                            if(j == (i + ext1) && 6-ext1>-1){
+                                slot1=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+    
+                    for(let j=5; j>=0; j--){
+                        if(clonedMatrix[j][6 - ext2]=='-'){
+                            if(j == (i + ext2) && 6-ext2<7){
+                                slot2=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                
+                    
+                // Nos aseguramos de que sea evitable
+                if((slot1 == (i + ext1) && 6 - ext1>-1) || (slot2 == (i + ext2) && 6 - ext2<7))
+                    return {state: true, motive: 'diagonal-secundaria-inversa', column:undefined, row:i, diagonal:i};
+            }
+
+            if(line.includes(check3) || line.includes(check4)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                for(let j=5; j>=0; j--){
+                    if(clonedMatrix[j][6-ext1]=='-'){
+                        if((i + ext1) == j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                // Nos aseguramos de que sea evitable
+                    if(slot1 == (i + ext1))
+                    return {state: true, motive: 'diagonal-secundaria-inversa-parcial', column:undefined, row:i, diagonal:i};
+            }
+        }
+
+    // No hay alineamientos de 3
+
+    return {state: false, motive: '', column:0, row:0, diagonal:0};
+}
