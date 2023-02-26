@@ -89,11 +89,18 @@ function Turn(pos){
                             // banner("player1");
                             return false;
                         }
-                    
+
+
                     player= !player;
                     
+                    let time= randomInterval(700, 1000);
                     // Turno de la IA
-                    IAsTurn(pos, i);
+                    table.style.pointerEvents='none';
+                    IAHoverAnimation(time);
+                    setTimeout(() => {
+                        table.style.pointerEvents='auto';
+                        IAsTurn(pos, i);
+                    }, time);
                     
                 }
                 else{
@@ -112,6 +119,42 @@ function Turn(pos){
             }
         }
     }
+}
+
+function IAHoverAnimation(time){
+    if(!gameOver){
+        let slots=[]
+    
+        for(let j=0; j<matrix.length; j++){
+            for(let i=5; i >= 0; i--){
+                if(matrix[i][j]=="-"){
+                        slots.push((i*7)+j);
+                        break;
+                    }
+                }
+        }
+
+        console.log(slots);
+            
+        slots = slots.sort((a, b) => 0.5 - Math.random());
+        
+        console.log(slots);
+
+        for(let i=0; i<slots.length; i++){
+                        slot[slots[i]].classList.remove('player1-pre');
+                        slot[slots[i]].classList.remove('player2-pre');
+                        
+                        setTimeout(() => {
+                            slot[slots[i]].classList.add('player2-pre');
+                        }, (time / (matrix.length + 1 ))*i);
+                        
+                        setTimeout(() => {
+                            slot[slots[i]].classList.remove('player2-pre');
+                        }, (time / (matrix.length + 1))*(i+1));
+        }
+
+    }
+
 }
 
 function Corroborate(){
