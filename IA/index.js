@@ -38,24 +38,26 @@ for(let i=0; i < slot.length;i++){
     });
 }
 function hover(pos){
-    slot[prepos].classList.remove('player1-pre');
-    slot[prepos].classList.remove('player2-pre');
+    if(!gameOver){
+        slot[prepos].classList.remove('player1-pre');
+        slot[prepos].classList.remove('player2-pre');
 
-    while(pos>6)
-        pos-=7;
-    
-    for(let i=5; i >= 0; i--){
-        if(matrix[i][pos]=="-"){
-            if(player){
-                prepos=(i*7)+pos;
-                slot[(i*7)+pos].classList.add('player1-pre');
+        while(pos>6)
+            pos-=7;
+        
+        for(let i=5; i >= 0; i--){
+            if(matrix[i][pos]=="-"){
+                if(player){
+                    prepos=(i*7)+pos;
+                    slot[(i*7)+pos].classList.add('player1-pre');
+                }
+                else{
+                    // Turno de la IA
+                    prepos=(i*7)+pos;
+                    slot[(i*7)+pos].classList.add('player2-pre');
+                }
+                break;
             }
-            else{
-                // Turno de la IA
-                prepos=(i*7)+pos;
-                slot[(i*7)+pos].classList.add('player2-pre');
-            }
-            break;
         }
     }
 }
@@ -384,6 +386,7 @@ function reset(){
     turnos=0;
 
     table.removeEventListener('click', tableHandle);
+    table.classList.remove('resetAlert');
 
     gameOver= false;
     points=[0, 0, 0, 0, 0, 0, 0];
@@ -478,6 +481,7 @@ function banner( flag ){
 
     setTimeout(() => {
             table.addEventListener('click', tableHandle);
+            table.classList.add('resetAlert');
     }, 2000);
 }
 
@@ -527,7 +531,7 @@ function IAsTurn(column, row) {
     evaluation= WinnerColumn(false);
     if(evaluation.state){
         console.log("PODEMOS PERDER", evaluation.motive);
-       
+
         if(AvoidLose(evaluation.column, evaluation.row, evaluation.motive, evaluation.diagonal))
             return 0;
     }
@@ -536,11 +540,10 @@ function IAsTurn(column, row) {
     //Tampoco hay amenazas...
 
     // Tiramos en el mejor lujar posible
-
+    
     BestColumn(row, column);
     return 0;
 }
-
 function WinnerColumn(flag){
     let check1="";
     let check2="";
@@ -548,12 +551,19 @@ function WinnerColumn(flag){
     let check3="";
     let check4="";
 
+    let ext1=0, ext2=0;
+    let slot1=0, slot2=0;
+
+    let checkAm='';
+
     if(flag){
         check1="-ooo";
         check2="ooo-";
 
         check3="o-oo";
         check4="oo-o";
+        
+        checkAm='ooo';
     }
 
     else{
@@ -562,6 +572,8 @@ function WinnerColumn(flag){
 
         check3="x-xx";
         check4="xx-x";
+
+        checkAm='xxx';
     }
 
     // Corrobora en Horizontal
@@ -569,10 +581,76 @@ function WinnerColumn(flag){
         let line=matrix[i].toString().replaceAll(',','');
         
         if(line.includes(check1) || line.includes(check2)){
-            return {state: true, motive: 'horizontal', column:undefined, row:i};
+            ext1=0; ext2=0; slot1=0; slot2=0;
+                // Buscamos las columnas donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<4){
+                        let subline= line.slice(i, i+3);
+                        if(subline == checkAm){
+                            ext1=i-1; ext2=i+3;
+                        }
+                    }
+                }
+
+                // Buscamos los extremos para asegurarnos de que la amenaza es real
+
+                for(let i=5; i>=0; i--){
+                    if(matrix[i][ext1]=='-'){
+                        slot1=i;
+                        break;
+                    }
+                }
+
+                for(let i=5; i>=0; i--){
+                    if(matrix[i][ext2]=='-'){
+                        slot2=i;
+                        break;
+                    }
+                }
+
+                if(slot1 == i || slot2 == i)
+                return {state: true, motive: 'horizontal', column:undefined, row:i};
         }
+
+
         if(line.includes(check3) || line.includes(check4)){
-            return {state: true, motive: 'horizontal-parcial', column:undefined, row:i};
+            ext1=0; slot1=0;
+
+                // Buscamos las columnas donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+                
+                
+                // Buscamos los extremos para asegurarnos de que la amenaza es real
+
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][ext1]=='-'){
+                        if(i==j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else
+                            break;
+                    }
+                }
+                console.log(ext1, slot1, i)
+                if(slot1 == i)
+                    return {state: true, motive: 'horizontal-parcial', column:undefined, row:i};
         }
     }
 
@@ -601,11 +679,90 @@ function WinnerColumn(flag){
 
             let line=array.toString().replaceAll(',','');
             if(line.includes(check1) || line.includes(check2)){
-                return {state: true, motive: 'diagonal-principal', column:undefined, row:i, diagonal:i};
+                ext1=0; ext2=0; slot1=0; slot2=0;
+            // Buscamos la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<4){
+                        let subline= line.slice(i, i+3);
+                        if(subline == checkAm){
+                            ext1=i-1; ext2=i+3;
+                        }
+                    }
+                }
+
+
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][ext1+i]=='-'){
+                        if(ext1 + i>-1){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][ext2+i]=='-'){
+                        if(ext2 + i<7){
+                            slot2=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                
+            // Nos aseguramos de que sea evitable
+                if((slot1 == (ext1) && ext1 + i>-1) || (slot2 == ext2 && ext2 + i<7))
+                    return {state: true, motive: 'diagonal-principal', column:undefined, row:i, diagonal:i};
             }
+
             if(line.includes(check3) || line.includes(check4)){
-                return {state: true, motive: 'diagonal-principal-parcial', column:undefined, row:i, diagonal:i};
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][ext1+i]=='-'){
+                            if(ext1 == j){
+                                slot1=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+    
+                    
+                // Nos aseguramos de que sea evitable
+                    if(slot1 == (ext1))
+                    return {state: true, motive: 'diagonal-principal-parcial', column:undefined, row:i, diagonal:i};
             }
+
         }
         
         // 4 diagonales principales inversas
@@ -617,9 +774,88 @@ function WinnerColumn(flag){
             
             let line=array.toString().replaceAll(',','');
             if(line.includes(check1) || line.includes(check2)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+            
+            // Buscamos la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<4){
+                        let subline= line.slice(i, i+3);
+                        if(subline == checkAm){
+                            ext1=i-1; ext2=i+3;
+                        }
+                    }
+                }
+
+
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][i-ext1]=='-'){
+                        if(i - ext1>-1){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][i - ext2]=='-'){
+                        if(i - ext2<7){
+                            slot2=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                
+            // Nos aseguramos de que sea evitable
+                if((slot1 == (ext1) && i - ext1>-1) || (slot2 == ext2 && i - ext2<7))
                 return {state: true, motive: 'diagonal-principal-inversa', column:undefined, row:i, diagonal:i};
             }
+
             if(line.includes(check3) || line.includes(check4)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][i - ext1]=='-'){
+                        if(ext1 == j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+    
+                    
+                // Nos aseguramos de que sea evitable
+                if(slot1 == (ext1))
                 return {state: true, motive: 'diagonal-principal-inversa-parcial', column:undefined, row:i, diagonal:i};
             }
         }
@@ -633,10 +869,88 @@ function WinnerColumn(flag){
 
             let line=array.toString().replaceAll(',','');
             if(line.includes(check1) || line.includes(check2)){
+                ext1=0; ext2=0; slot1=0; slot2=0;
+                // Buscamos la amenaza
+                    for(let i=0; i < line.length; i++){
+                        if(i<4){
+                            let subline= line.slice(i, i+3);
+                            if(subline == checkAm){
+                                ext1=i-1; ext2=i+3;
+                            }
+                        }
+                    }
+    
+    
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][ext1]=='-'){
+                            if(j == (i + ext1) && ext1>-1){
+                                slot1=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+    
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][ext2]=='-'){
+                            if(j == (i + ext2) && ext2<7){
+                                slot2=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+
+                // Nos aseguramos de que sea evitable
+                    if((slot1 == (i + ext1) && ext1>-1) || (slot2 == (i + ext2) && ext2<7))
                 return {state: true, motive: 'diagonal-secundaria', column:undefined, row:i, diagonal:i};
             }
+
+
             if(line.includes(check3) || line.includes(check4)){
-                return {state: true, motive: 'diagonal-secundaria-parcial', column:undefined, row:i, diagonal:i};
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][ext1]=='-'){
+                        if((i + ext1) == j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+    
+                    
+                // Nos aseguramos de que sea evitable
+                    if(slot1 == (i + ext1))
+                    return {state: true, motive: 'diagonal-secundaria-parcial', column:undefined, row:i, diagonal:i};
             }
         }
 
@@ -649,10 +963,87 @@ function WinnerColumn(flag){
             
             let line=array.toString().replaceAll(',','');
             if(line.includes(check1) || line.includes(check2)){
-                return {state: true, motive: 'diagonal-secundaria-inversa', column:undefined, row:i, diagonal:i};
+                ext1=0; ext2=0; slot1=0; slot2=0;
+                // Buscamos la amenaza
+                    for(let i=0; i < line.length; i++){
+                        if(i<4){
+                            let subline= line.slice(i, i+3);
+                            if(subline == checkAm){
+                                ext1=i-1; ext2=i+3;
+                            }
+                        }
+                    }
+    
+    
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][6-ext1]=='-'){
+                            if(j == (i + ext1) && 6-ext1>-1){
+                                slot1=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+    
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][6 - ext2]=='-'){
+                            if(j == (i + ext2) && 6-ext2<7){
+                                slot2=j;
+                                break;
+                            }
+    
+                            else{
+                                break;
+                            }
+                        }
+                    }
+                
+                    
+                // Nos aseguramos de que sea evitable
+                if((slot1 == (i + ext1) && 6 - ext1>-1) || (slot2 == (i + ext2) && 6 - ext2<7))
+                    return {state: true, motive: 'diagonal-secundaria-inversa', column:undefined, row:i, diagonal:i};
             }
+
             if(line.includes(check3) || line.includes(check4)){
-                return {state: true, motive: 'diagonal-secundaria-inversa-parcial', column:undefined, row:i, diagonal:i};
+                ext1=0; ext2=0; slot1=0; slot2=0;
+
+                // Buscamos donde surge la amenaza
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check3){
+                            ext1=i+1;
+                        }
+                    }
+                }
+                for(let i=0; i < line.length; i++){
+                    if(i<5){
+                        let subline= line.slice(i, i+4);
+                        if(subline == check4){
+                            ext1=i+2;
+                        }
+                    }
+                }
+    
+                for(let j=5; j>=0; j--){
+                    if(matrix[j][6-ext1]=='-'){
+                        if((i + ext1) == j){
+                            slot1=j;
+                            break;
+                        }
+
+                        else{
+                            break;
+                        }
+                    }
+                }
+
+                // Nos aseguramos de que sea evitable
+                    if(slot1 == (i + ext1))
+                    return {state: true, motive: 'diagonal-secundaria-inversa-parcial', column:undefined, row:i, diagonal:i};
             }
         }
 
@@ -660,6 +1051,8 @@ function WinnerColumn(flag){
 
     return false;
 }
+
+
 
 function AvoidLose(column, row, motive, diagonal){
     //Evitamos en Vertical
@@ -778,7 +1171,7 @@ function AvoidLose(column, row, motive, diagonal){
             }
             
             let line=array.toString().replaceAll(',','');
-            
+            console.log('aaaaaaaaaaaaaa', line)
             let ext1=0, ext2=0;
 
             // Buscamos donde surge la amenaza
@@ -787,7 +1180,7 @@ function AvoidLose(column, row, motive, diagonal){
                     let subline= line.slice(i, i+3);
                     if(subline == "xxx"){
                         ext1=i-1; ext2=i+3;
-                        console.log('diagonal amenaza', diagonal - ext1, diagonal - ext2)
+                        console.log('diagonal amenaza inversa', diagonal - ext1, diagonal - ext2)
                     }
                 }
             }
@@ -1668,6 +2061,8 @@ function WinGame(column, row, motive, diagonal){
 
 }
 
+
+
 function BestColumn(row, column){
     // // Primero nos centramos en las columnas vacias desde el centro
     for(let i=3, k=3; i<matrix[0].length-2 && k>1; i++, k--){
@@ -1696,7 +2091,8 @@ function BestColumn(row, column){
 
     // Ya nos encargamos de asegurar que en el comienzo no tomen el centro, ahora recorremos de igual forma
     // Pero para evaluar la conveniencia de cada columna, en este caso, para el enemigo
-
+    points=[0, 0, 0, 0, 0, 0, 0];
+    rivalPoints=[0, 0, 0, 0, 0, 0, 0];
 
     // Evaluamos a su favor
     for(let i=0; i<matrix[0].length; i++){
@@ -1779,8 +2175,6 @@ function BestColumn(row, column){
         }
     }
 }
-
-
 function evalRivalColumn(line, column, comp){
     for(let i=5; i>=0; i--){
         rivalPoints[column]=-1; //Eliminamos columnas llenas
@@ -1959,13 +2353,15 @@ function evalRivalColumn(line, column, comp){
                         }
                     }
 
+                if(rivalPoints[column] > 3)
+                    rivalPoints[column]=0;
+
                 return 0;
         }
     }
     
     console.log('-', column)
 }
-
 function evalIAColumn(line, column, comp){
     for(let i=5; i>=0; i--){
         points[column]=-1; //Eliminamos columnas llenas

@@ -260,6 +260,31 @@ body{
     transition: filter 1s ease-in-out;
 }
 
+.resetAlert{
+    position: relative;
+}
+
+.resetAlert::before{
+    content: "Click for Restart";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+
+    backdrop-filter: brightness(0.7) blur(10px);
+
+    
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 2;
+}
+
 
 /* Animaciones */
 
@@ -344,5 +369,17 @@ body{
     .tablero-trasero{
         width: 500px;
         height: 500px;
+    }
+}
+
+@media (pointer: fine){
+    .resetAlert::before{
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+
+    .resetAlert:hover::before{
+        opacity: 1;
+        transition: opacity 0.5s ease-in-out;
     }
 }

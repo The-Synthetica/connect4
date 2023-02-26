@@ -378,6 +378,7 @@ function reset(){
     turnos=0;
 
     table.removeEventListener('click', tableHandle);
+    table.classList.remove('resetAlert');
 
     gameOver= false;
 }
@@ -470,6 +471,7 @@ function banner( flag ){
 
     setTimeout(() => {
             table.addEventListener('click', tableHandle);
+            table.classList.add('resetAlert');
     }, 2000);
 }
 

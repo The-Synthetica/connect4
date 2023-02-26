@@ -82,23 +82,14 @@ section{
     backdrop-filter: brightness(0.5) blur(10px);
 
     border: solid 2.5px black;
-
-    opacity: 0;
     
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    transition: opacity 0.25s ease-out;
-
     text-decoration: none;
     color: white;
-}
-
-.board:hover{
-    opacity: 1;
-    transition: opacity 0.75s ease-in-out;
 }
 
 
@@ -164,4 +155,18 @@ section{
         width: 500px;
         height: 500px;
     }
+}
+
+@media (pointer:fine){
+    
+.board{
+    opacity: 0;
+    transition: opacity 0.25s ease-out;
+}
+
+.board:hover{
+    opacity: 1;
+    transition: opacity 0.75s ease-in-out;
+}
+
 }
