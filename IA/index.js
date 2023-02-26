@@ -2168,142 +2168,19 @@ function BestColumn(row, column){
         evalIAColumn(line, i, 'o');
     }
 
+    //Evaluamos el riesgo de perdida en ambos casos
+    evalRisk(true);
+    evalRisk(false)
+
     console.log(rivalPoints, points)
 
     let bestRival = Math.max(...rivalPoints);
     let bestIA = Math.max(...points);    
 
-    // Clonamos la matrix
-    for(let i=0; i<clonedMatrix.length; i++){
-        for(let j=0; j<clonedMatrix[i].length; j++){
-            clonedMatrix[i][j]=matrix[i][j];
-        }
+    for(let i=0; i<7; i++){
+        console.log(rivalPoints, points)
+        console.log(bestIA, bestRival)
     }
-
-
-    // Evaluamos si el mejor tiro enemigo nos pone en peligro
-            for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
-                if(i==3 && k==3){
-                    if(bestRival==rivalPoints[i]){
-                        for(let j=5; j>=0; j--){
-                            if(matrix[j][i]=='-'){
-                                clonedMatrix[j][i]='x';
-                                break
-                            }
-                        }
-                        if(RiskOfLose(true).state){
-                            rivalPoints[i]=-1;
-                            bestRival = Math.max(...rivalPoints)
-                            break;
-                        }
-
-                        break;
-                    }
-                }
-
-                else{
-                    if(bestRival==rivalPoints[k]){
-                        for(let j=5; j>=0; j--){
-                            if(matrix[j][i]=='-'){
-                                clonedMatrix[j][i]='x';
-                                break
-                            }
-                        }
-                        if(RiskOfLose(true).state){
-                            rivalPoints[i]=-1;
-                            bestRival = Math.max(...rivalPoints)
-                            break;
-                        }
-                        
-                        break;
-                    }
-
-                    
-                    if(bestRival==rivalPoints[i]){
-                        for(let j=5; j>=0; j--){
-                            if(matrix[j][i]=='-'){
-                                clonedMatrix[j][i]='x';
-                                break
-                            }
-                        }
-                        if(RiskOfLose(true).state){
-                            rivalPoints[i]=-1;
-                            bestRival = Math.max(...rivalPoints)
-                            break;
-                        }
-                        
-                        break;
-                    }
-                }
-            }
-
-
-    // Clonamos la matrix
-    for(let i=0; i<clonedMatrix.length; i++){
-        for(let j=0; j<clonedMatrix[i].length; j++){
-            clonedMatrix[i][j]=matrix[i][j];
-        }
-    }
-    
-    // Evaluamos si el mejor tiro amigo nos pone en peligro
-            for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
-                if(i==3 && k==3){
-                    if(bestIA==points[i]){
-                        for(let j=5; j>=0; j--){
-                            if(matrix[j][i]=='-'){
-                            clonedMatrix[j][i]='o';
-                            break;
-                            }
-                        }
-                        if(RiskOfLose(false).state){
-                            points[i]=-1;
-                            bestIA = Math.max(...points)
-                            break;
-                        }
-                        
-                    break;
-                    }
-                }
-
-                else{
-                    if(bestIA==points[k]){
-                        for(let j=5; j>=0; j--){
-                            if(matrix[j][k]=='-'){
-                            clonedMatrix[j][k]='o';
-                            break;
-                            }
-                        }
-                        console.log('aaaaaaaaaaa',RiskOfLose(false).state)
-                        if(RiskOfLose(false).state){
-                            points[k]=-1;
-                            bestIA = Math.max(...points)
-                            break;
-                        }
-                        
-                    break;
-                    }
-
-                    
-                    if(bestIA==points[i]){
-                        for(let j=5; j>=0; j--){
-                            if(matrix[j][i]=='-'){
-                            clonedMatrix[j][i]='o';
-                            break;
-                            }
-                        }
-                        if(RiskOfLose(false).state){
-                            points[i]=-1;
-                            bestIA = Math.max(...points)
-                            break;
-                        }
-                        
-                    break;
-                    }
-                }
-            }
-
-    console.log(rivalPoints, points)
-    console.log(bestIA, bestRival)
     
     if(bestRival>bestIA){
         for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
@@ -2726,6 +2603,148 @@ function evalIAColumn(line, column, comp){
     }
     
     console.log('-', column)
+}
+
+function evalRisk(flag){
+    if(flag){
+        //IA
+        let bestIA = Math.max(...points);
+        
+    // Clonamos la matrix
+    for(let i=0; i<clonedMatrix.length; i++){
+        for(let j=0; j<clonedMatrix[i].length; j++){
+            clonedMatrix[i][j]=matrix[i][j];
+        }
+    }
+    
+    // Evaluamos si el mejor tiro amigo nos pone en peligro
+            for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
+                if(i==3 && k==3){
+                    if(bestIA==points[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                            clonedMatrix[j][i]='o';
+                            break;
+                            }
+                        }
+                        if(RiskOfLose(false).state){
+                            points[i]=-1;
+                            bestIA = Math.max(...points)
+                            break;
+                        }
+                        
+                    break;
+                    }
+                }
+
+                else{
+                    if(bestIA==points[k]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][k]=='-'){
+                            clonedMatrix[j][k]='o';
+                            break;
+                            }
+                        }
+                        console.log('aaaaaaaaaaa',RiskOfLose(false).state)
+                        if(RiskOfLose(false).state){
+                            points[k]=-1;
+                            bestIA = Math.max(...points)
+                            break;
+                        }
+                        
+                    break;
+                    }
+
+                    
+                    if(bestIA==points[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                            clonedMatrix[j][i]='o';
+                            break;
+                            }
+                        }
+                        if(RiskOfLose(false).state){
+                            points[i]=-1;
+                            bestIA = Math.max(...points)
+                            break;
+                        }
+                        
+                    break;
+                    }
+                }
+            }
+
+    }
+    
+    else{
+        //Player
+            // Clonamos la matrix
+    let bestRival = Math.max(...rivalPoints);
+
+    for(let i=0; i<clonedMatrix.length; i++){
+        for(let j=0; j<clonedMatrix[i].length; j++){
+            clonedMatrix[i][j]=matrix[i][j];
+        }
+    }
+
+
+    // Evaluamos si el mejor tiro enemigo nos pone en peligro
+            for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
+                if(i==3 && k==3){
+                    if(bestRival==rivalPoints[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                clonedMatrix[j][i]='x';
+                                break
+                            }
+                        }
+                        if(RiskOfLose(true).state){
+                            rivalPoints[i]=-1;
+                            bestRival = Math.max(...rivalPoints)
+                            break;
+                        }
+
+                        break;
+                    }
+                }
+
+                else{
+                    if(bestRival==rivalPoints[k]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                clonedMatrix[j][i]='x';
+                                break
+                            }
+                        }
+                        if(RiskOfLose(true).state){
+                            rivalPoints[i]=-1;
+                            bestRival = Math.max(...rivalPoints)
+                            break;
+                        }
+                        
+                        break;
+                    }
+
+                    
+                    if(bestRival==rivalPoints[i]){
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                clonedMatrix[j][i]='x';
+                                break
+                            }
+                        }
+                        if(RiskOfLose(true).state){
+                            rivalPoints[i]=-1;
+                            bestRival = Math.max(...rivalPoints)
+                            break;
+                        }
+                        
+                        break;
+                    }
+                }
+            }
+    }
+
 }
 
 function RiskOfLose(flag){
