@@ -277,7 +277,7 @@ function ViewWinner(motive, column, row, line, check){
             }
         }
         
-            for(let j=column, k=0; j<6 && k<7; j++, k++){
+            for(let j=0, k=column; j<6 && k<7; j++, k++){
                 if(ext1 <= j && j <= ext2){
                     setTimeout(()=>{
                         token[(j*7)+k].classList.add('player-winner');

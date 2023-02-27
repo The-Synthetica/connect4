@@ -8,6 +8,8 @@ let gameOver= false;
 
 let prepos=0;
 
+let center=true;
+
 const redTokens= document.getElementsByClassName('player1');
 const blueTokens= document.getElementsByClassName('player2');
 
@@ -101,6 +103,7 @@ function Turn(pos){
                     player= !player;
                     
                     let time= randomInterval(700, 1000);
+
                     // Turno de la IA
                     table.style.pointerEvents='none';
                     IAHoverAnimation(time);
@@ -333,7 +336,7 @@ function ViewWinner(motive, column, row, line, check){
             }
         }
         
-            for(let j=column, k=0; j<6 && k<7; j++, k++){
+            for(let j=0, k=column; j<6 && k<7; j++, k++){
                 if(ext1 <= j && j <= ext2){
                     setTimeout(()=>{
                         token[(j*7)+k].classList.add('player-winner');
@@ -2113,29 +2116,28 @@ function WinGame(column, row, motive, diagonal){
 
 function BestColumn(row, column){
     // // Primero nos centramos en las columnas vacias desde el centro
-    for(let i=3, k=3; i<matrix[0].length-2 && k>1; i++, k--){
-        let array1=[];
-        let array2=[];
+        for(let i=3, k=3; i<matrix[0].length-2 && k>1; i++, k--){
+            let array1=[];
+            let array2=[];
 
-        for(let j=0; j<matrix.length; j++){
-            array1.push(matrix[j][i]);
-            array2.push(matrix[j][k]);
-        }
-        
-        let line=array1.toString().replaceAll(',','');
-        let line2=array2.toString().replaceAll(',','');
-        
-        if(line == '------'){
-            slot[i].click();
-            return 0;
-        }
+            for(let j=0; j<matrix.length; j++){
+                array1.push(matrix[j][i]);
+                array2.push(matrix[j][k]);
+            }
+            
+            let line=array1.toString().replaceAll(',','');
+            let line2=array2.toString().replaceAll(',','');
+            
+            if(line == '------'){
+                slot[i].click();
+                return 0;
+            }
 
-        if(line2 == '------'){
-            slot[k].click();
-            return 0;
+            if(line2 == '------'){
+                slot[k].click();
+                return 0;
+            }
         }
-
-    }
 
     // Ya nos encargamos de asegurar que en el comienzo no tomen el centro, ahora recorremos de igual forma
     // Pero para evaluar la conveniencia de cada columna, en este caso, para el enemigo
@@ -2170,7 +2172,7 @@ function BestColumn(row, column){
 
     //Evaluamos el riesgo de perdida en ambos casos
 
-    console.log(rivalPoints, points)
+    console.log(rivalPoints.toString().replaceAll(',',' '), '\n', points.toString().replaceAll(',',' '))
 
     for(let i=0; i<7; i++){
         evalRisk(true);
@@ -2180,28 +2182,40 @@ function BestColumn(row, column){
     let bestRival = Math.max(...rivalPoints);
     let bestIA = Math.max(...points);
 
-    console.log(rivalPoints, points)
+    console.log(rivalPoints.toString().replaceAll(',',' '), '\n', points.toString().replaceAll(',',' '))
     console.log(bestIA, bestRival)
     
-    if(bestRival>bestIA){
+    if(bestRival>=bestIA){
         for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
                 if(i==3 && k==3){
                     if(bestRival==rivalPoints[i]){
-                        slot[i].click();
-                        return 0;
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                slot[i].click();
+                                return 0;
+                            }
+                        }
                     }
                 }
 
                 else{
                     if(bestRival==rivalPoints[k]){
-                        slot[k].click();
-                        return 0;
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][k]=='-'){
+                                slot[k].click();
+                                return 0;
+                            }
+                        }
                     }
 
                     
                     if(bestRival==rivalPoints[i]){
-                        slot[i].click();
-                        return 0;
+                        for(let j=5; j>=0; j--){
+                            if(matrix[j][i]=='-'){
+                                slot[i].click();
+                                return 0;
+                            }
+                        }
                     }
                 }
         }
@@ -2211,21 +2225,33 @@ function BestColumn(row, column){
         for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
             if(i==3 && k==3){
                 if(bestIA==points[i]){
-                    slot[i].click();
-                    return 0;
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][i]=='-'){
+                            slot[i].click();
+                            return 0;
+                        }
+                    }
                 }
             }
 
             else{
                 if(bestIA==points[k]){
-                    slot[k].click();
-                    return 0;
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][k]=='-'){
+                            slot[k].click();
+                            return 0;
+                        }
+                    }
                 }
 
                 
                 if(bestIA==points[i]){
-                    slot[i].click();
-                    return 0;
+                    for(let j=5; j>=0; j--){
+                        if(matrix[j][i]=='-'){
+                            slot[i].click();
+                            return 0;
+                        }
+                    }
                 }
             }
         }
@@ -2239,11 +2265,11 @@ function evalRivalColumn(line, column, comp){
             // Obtenemos la ultima pieza
             rivalPoints[column]=0; //Si se puede tirar, la ponemos a 0 de nuevo y evaluamos
 
-            console.log(i, column);
+            // console.log(i, column);
 
             //Evaluacion Horizontal
                 let line= matrix[i].toString().replaceAll(',','');
-                console.log(line, 'h')
+                // console.log(line, 'h')
 
                     for(let j=column+1; j<line.length; j++){
                         // console.log(line[j], comp)
@@ -2256,7 +2282,7 @@ function evalRivalColumn(line, column, comp){
                     }
 
                     for(let j=column-1; j>0; j--){
-                        console.log(line[j], 'aca', column)
+                        // console.log(line[j], 'aca', column)
                         if(line[j]==comp)
                             rivalPoints[column]++;
 
@@ -2273,13 +2299,12 @@ function evalRivalColumn(line, column, comp){
                 }
                 
                 line=array.toString().replaceAll(',','');
-                console.log(line, 'v')
+                // console.log(line, 'v')
                 
                 for(let j=i+1; j<line.length; j++){
                     // console.log(line[j], comp)
                     if(line[j]==comp){
                         rivalPoints[column]++;
-                        break;
                     }
 
                     else{
@@ -2296,7 +2321,7 @@ function evalRivalColumn(line, column, comp){
                     
                     line=array.toString().replaceAll(',','');
 
-                    console.log(line, 'dp');
+                    // console.log(line, 'dp');
 
                     for(let j=i+1; j<line.length; j++){
                     if(line[j]==comp){
@@ -2325,7 +2350,7 @@ function evalRivalColumn(line, column, comp){
                     }
                     
                     line= array.toString().replaceAll(',','');
-                    console.log(line, 'dpi')
+                    // console.log(line, 'dpi')
 
                     for(let j=i+1; j<line.length; j++){
                         if(line[j]==comp){
@@ -2356,7 +2381,7 @@ function evalRivalColumn(line, column, comp){
                     }
         
                     line=array.toString().replaceAll(',','');
-                    console.log(line, 'ds')
+                    // console.log(line, 'ds')
 
                     for(let j=column+1; j<line.length; j++){
                         if(line[j]==comp){
@@ -2387,7 +2412,7 @@ function evalRivalColumn(line, column, comp){
                     }
                     
                     line=array.toString().replaceAll(',','');
-                    console.log(line, 'dsi');
+                    // console.log(line, 'dsi');
 
                     for(let j=i-1; j<line.length; j++){
                         if(line[j]==comp){
@@ -2426,11 +2451,11 @@ function evalIAColumn(line, column, comp){
             // Obtenemos la ultima pieza
             points[column]=0; //Si se puede tirar, la ponemos a 0 de nuevo y evaluamos
 
-            console.log(i, column);
+            // console.log(i, column);
 
             //Evaluacion Horizontal
                 let line= matrix[i].toString().replaceAll(',','');
-                console.log(line, 'h')
+                // console.log(line, 'h')
 
                     for(let j=column+1; j<line.length; j++){
                         // console.log(line[j], comp)
@@ -2443,7 +2468,7 @@ function evalIAColumn(line, column, comp){
                     }
 
                     for(let j=column-1; j>0; j--){
-                        console.log(line[j], 'aca', column)
+                        // console.log(line[j], 'aca', column)
                         if(line[j]==comp)
                             points[column]++;
 
@@ -2460,13 +2485,12 @@ function evalIAColumn(line, column, comp){
                 }
                 
                 line=array.toString().replaceAll(',','');
-                console.log(line, 'v')
+                // console.log(line, 'v')
                 
                 for(let j=i+1; j<line.length; j++){
                     // console.log(line[j], comp)
                     if(line[j]==comp){
                         points[column]++;
-                        break;
                     }
 
                     else{
@@ -2483,7 +2507,7 @@ function evalIAColumn(line, column, comp){
                     
                     line=array.toString().replaceAll(',','');
 
-                    console.log(line, 'dp');
+                    // console.log(line, 'dp');
 
                     for(let j=i+1; j<line.length; j++){
                     if(line[j]==comp){
@@ -2512,7 +2536,7 @@ function evalIAColumn(line, column, comp){
                     }
                     
                     line= array.toString().replaceAll(',','');
-                    console.log(line, 'dpi')
+                    // console.log(line, 'dpi')
 
                     for(let j=i+1; j<line.length; j++){
                         if(line[j]==comp){
@@ -2543,7 +2567,7 @@ function evalIAColumn(line, column, comp){
                     }
         
                     line=array.toString().replaceAll(',','');
-                    console.log(line, 'ds')
+                    // console.log(line, 'ds')
 
                     for(let j=column+1; j<line.length; j++){
                         if(line[j]==comp){
@@ -2574,7 +2598,7 @@ function evalIAColumn(line, column, comp){
                     }
                     
                     line=array.toString().replaceAll(',','');
-                    console.log(line, 'dsi');
+                    // console.log(line, 'dsi');
 
                     for(let j=i-1; j<line.length; j++){
                         if(line[j]==comp){
@@ -2603,7 +2627,7 @@ function evalIAColumn(line, column, comp){
         }
     }
     
-    console.log('-', column)
+    // console.log('-', column)
 }
 
 function evalRisk(flag){
@@ -2617,8 +2641,6 @@ function evalRisk(flag){
             clonedMatrix[i][j]=matrix[i][j];
         }
     }
-
-    console.log(matrix, clonedMatrix)
     
     // Evaluamos si el mejor tiro amigo nos pone en peligro
             for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
@@ -2676,7 +2698,6 @@ function evalRisk(flag){
                 }
             }
             
-            console.log(clonedMatrix)
             return 0;
     }
     
@@ -2747,7 +2768,6 @@ function evalRisk(flag){
                 }
             }
             
-            console.log(clonedMatrix)
             return 0;
     }
 
