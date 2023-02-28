@@ -2746,7 +2746,7 @@ function evalRisk(flag){
 
                     
                     if(bestIA==points[i]){
-                        for(let j=5; j>=0; j--){
+                        for(let j=5; j>0; j--){
                             if(matrix[j][i]=='-' && matrix[j-1][i]=='-'){
                             clonedMatrix[j][i]='o';
                             clonedMatrix[j-1][i]='x';
