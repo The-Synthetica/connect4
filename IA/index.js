@@ -2709,7 +2709,7 @@ function evalRisk(flag){
             for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
                 if(i==3 && k==3){
                     if(bestIA==points[i]){
-                        for(let j=5; j>=0; j--){
+                        for(let j=5; j>0; j--){
                             if(matrix[j][i]=='-' && matrix[j-1][i]=='-'){
                             clonedMatrix[j][i]='o';
                             clonedMatrix[j-1][i]='x';
@@ -2728,7 +2728,7 @@ function evalRisk(flag){
 
                 else{
                     if(bestIA==points[k]){
-                        for(let j=5; j>=0; j--){
+                        for(let j=5; j>0; j--){
                             if(matrix[j][k]=='-' && matrix[j-1][k]=='-'){
                             clonedMatrix[j][k]='o';
                             clonedMatrix[j-1][k]='x';
@@ -2782,7 +2782,7 @@ function evalRisk(flag){
             for(let i=3, k=3; i<matrix[0].length && k>=0; i++, k--){
                 if(i==3 && k==3){
                     if(bestRival==rivalPoints[i]){
-                        for(let j=5; j>0; j--){
+                        for(let j=5; j>=0; j--){
                             if(matrix[j][i]=='-'){
                                 clonedMatrix[j][i]='o';
                                 break;
@@ -2800,7 +2800,7 @@ function evalRisk(flag){
 
                 else{
                     if(bestRival==rivalPoints[k]){
-                        for(let j=5; j>0; j--){
+                        for(let j=5; j>=0; j--){
                             if(matrix[j][k]=='-'){
                                 clonedMatrix[j][k]='o';
                                 break
@@ -2817,7 +2817,7 @@ function evalRisk(flag){
 
                     
                     if(bestRival==rivalPoints[i]){
-                        for(let j=5; j>0; j--){
+                        for(let j=5; j>=0; j--){
                             if(matrix[j][i]=='-'){
                                 clonedMatrix[j][i]='o';
                                 break
